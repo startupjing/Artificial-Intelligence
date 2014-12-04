@@ -1,0 +1,42 @@
+% NOTE: Please ignore this file, it is not used
+
+% compute information gain, error, threshold of a decision stump
+%    x: column vector of feature data
+%    y: labels
+%    classification: either > or <
+
+function [pred, err, t] = predInfo(x,y,w,classification)
+    % number of examples   
+    N = length(x);
+    % error of each trial of split
+    errVec = zeros(N,1);
+    % predictions of each example
+    pred = zeros(N,1);
+    predHist = cell(N,1);
+    % try each value in x as a split point
+    for i=1:N
+        switch classification
+            % make predictions based on >= or < threshold
+            case '>'
+                temp = logical(x >= x(i));
+                pred(temp) = 1;
+                pred(~temp) = -1;
+            case '<'
+                temp = logical(x < x(i));
+                pred(temp) = 1;
+                pred(~temp) = -1;
+        end
+        predHist{i} = pred;
+        % compute weighted missclassification error
+        miss = logical(y ~= pred);
+        errVec(i) = sum(miss.*w)/sum(w);
+    end
+    % choose minimum error
+    [val,idx] = min(errVec);
+    err = val;
+    % get corresponding threshold
+    t = x(idx);  
+    
+    pred = predHist{idx};
+end
+

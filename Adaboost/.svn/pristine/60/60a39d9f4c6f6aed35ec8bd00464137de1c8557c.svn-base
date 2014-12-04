@@ -1,0 +1,27 @@
+function [splitVal, gain] = computeGain(x, y, weight)
+% compute information gain
+   N = length(x);
+   gainHist = zeros(N,1);
+   p = sum(logical(y==1).*weight);
+   temp = computeB(p);
+   for i = 1:N
+%        idx = logical(x >= x(i));
+%        num1 = sum(weight(idx));
+%        num2 = 1 - num1;
+%        sum1 = sum(logical(y(idx)==1).*weight(idx));
+%        sum2 = sum(logical(y(~idx)==1).*weight(~idx));
+%        gainHist(i) = temp - (computeB(sum1./num1).*num1 + ...
+%                  computeB(sum2./num2).*num2); 
+         idx_more = logical(x >= x(i));
+         num1 = sum(weight(idx_more));
+         num2 = 1 - num1;
+         p1 = sum(logical(y(idx_more) == 1).*weight(idx_more));
+         p2 = sum(logical(y(~idx_more) == 1).*weight(~idx_more));
+         entropy1 = computeB(p1./num1).*num1;
+         entropy2 = computeB(p2./num2).*num2;
+         gainHist(i) = temp - (entropy1 + entropy2);
+   end
+   [gain,splitIdx] = max(gainHist);
+   splitVal = x(splitIdx);
+end
+
